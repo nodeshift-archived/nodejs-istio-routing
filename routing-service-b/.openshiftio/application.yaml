@@ -1,0 +1,154 @@
+apiVersion: v1
+kind: Template
+metadata:
+  name: nodejs-istio-routing-service-b-service
+  annotations:
+    description: The Istio Routing Mission shows routing with Istio
+    tags: nodejs, routing
+parameters:
+- name: SOURCE_REPOSITORY_URL
+  description: The source URL for the application
+  displayName: Source URL
+  required: true
+- name: SOURCE_REPOSITORY_REF
+  description: The branch name for the application
+  displayName: Source Branch
+  value: master
+  required: true
+- name: SOURCE_REPOSITORY_DIR
+  description: The location within the source repo of the application
+  displayName: Source Directory
+  value: .
+  required: true
+- name: GITHUB_WEBHOOK_SECRET
+  description: A secret string used to configure the GitHub webhook.
+  displayName: GitHub Webhook Secret
+  required: true
+  from: '[a-zA-Z0-9]{40}'
+  generate: expression
+objects:
+- apiVersion: v1
+  kind: ImageStream
+  metadata:
+    name: nodejs-istio-routing-service-b
+  spec: {}
+- apiVersion: v1
+  kind: ImageStream
+  metadata:
+    name: nodejs-istio-routing-service-b-runtime
+  spec:
+    tags:
+    - name: latest
+      from:
+        kind: DockerImage
+        name: 'bucharestgold/centos7-s2i-nodejs:10.x'
+- apiVersion: v1
+  kind: BuildConfig
+  metadata:
+    name: nodejs-istio-routing-service-b
+  spec:
+    output:
+      to:
+        kind: ImageStreamTag
+        name: nodejs-istio-routing-service-b:latest
+    postCommit: {}
+    resources: {}
+    source:
+      git:
+        uri: ${SOURCE_REPOSITORY_URL}
+        ref: ${SOURCE_REPOSITORY_REF}
+      contextDir: ${SOURCE_REPOSITORY_DIR}
+      type: Git
+    strategy:
+      type: Source
+      sourceStrategy:
+        from:
+          kind: ImageStreamTag
+          name: nodejs-istio-routing-service-b-runtime:latest
+        incremental: true
+    triggers:
+    - github:
+        secret: ${GITHUB_WEBHOOK_SECRET}
+      type: GitHub
+    - type: ConfigChange
+    - imageChange: {}
+      type: ImageChange
+  status:
+    lastVersion: 0
+- apiVersion: v1
+  kind: Service
+  spec:
+    ports:
+      - protocol: TCP
+        port: 8080
+        name: http
+        targetPort: 8080
+    type: ClusterIP
+    selector:
+      app: nodejs-istio-routing-service
+      project: nodejs-istio-routing-service
+      provider: nodeshift
+  metadata:
+    name: nodejs-istio-routing-service
+    labels:
+      app: nodejs-istio-routing-service
+      provider: nodeshift
+      expose: 'true'
+      project: nodejs-istio-routing-service-b
+      version: 2.0.0
+- apiVersion: v1
+  kind: DeploymentConfig
+  metadata:
+    name: nodejs-istio-routing-service-b
+    labels:
+      app: nodejs-istio-routing-service
+      provider: nodeshift
+      project: nodejs-istio-routing-service
+      version: b
+  spec:
+    template:
+      spec:
+        containers:
+          - readinessProbe:
+              httpGet:
+                path: /api/data
+                port: 8080
+                scheme: HTTP
+            livenessProbe:
+              httpGet:
+                path: /api/data
+                port: 8080
+                scheme: HTTP
+              initialDelaySeconds: 60
+              periodSeconds: 30
+            image: nodejs-istio-routing-service-b
+            name: nodejs-istio-routing-service-b
+            securityContext:
+              privileged: false
+            ports:
+              - containerPort: 8080
+                name: http
+                protocol: TCP
+      metadata:
+        annotations:
+          sidecar.istio.io/inject: "true"
+        labels:
+          app: nodejs-istio-routing-service
+          version: b
+          project: nodejs-istio-routing-service
+          provider: nodeshift
+    replicas: 1
+    selector:
+      app: nodejs-istio-routing-service
+      project: nodejs-istio-routing-service
+      provider: nodeshift
+    triggers:
+      - type: ConfigChange
+      - type: ImageChange
+        imageChangeParams:
+          automatic: true
+          containerNames:
+            - nodejs-istio-routing-service-b
+          from:
+            kind: ImageStreamTag
+            name: 'nodejs-istio-routing-service-b:latest'
