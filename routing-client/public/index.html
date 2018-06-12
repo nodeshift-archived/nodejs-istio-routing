@@ -1,0 +1,115 @@
+<!--
+  ~
+  ~  Copyright 2018 Red Hat, Inc, and individual contributors.
+  ~
+  ~  Licensed under the Apache License, Version 2.0 (the "License");
+  ~  you may not use this file except in compliance with the License.
+  ~  You may obtain a copy of the License at
+  ~
+  ~  http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~  Unless required by applicable law or agreed to in writing, software
+  ~  distributed under the License is distributed on an "AS IS" BASIS,
+  ~  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~  See the License for the specific language governing permissions and
+  ~  limitations under the License.
+  ~
+  -->
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>Istio Routing Mission - Node.js</title>
+  <link rel="stylesheet"
+        href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+        integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+        crossorigin="anonymous">
+</head>
+
+<body>
+
+<div class="container">
+
+  <div>
+    <h1>Istio Routing Mission - Node.js</h1>
+    <p class="lead">
+      This mission showcases the usage of Istio routing functionality, which can be used to create A/B tests, blue/green deployments for production releases, or simple load balancing.
+    </p>
+    <p>
+      Here we'll learn how to integrate routing into an Istio / Node.js application, using RouteRules and multiple deployments of a service.
+    </p>
+
+    <div class="row">
+
+      <div class="col-md-6">
+        <h2>Request Data</h2>
+
+        <button id="invoke" type="submit" class="btn btn-primary">Invoke</button>
+        <button id="clear" type="submit" class="btn btn-danger">Clear Log</button>
+
+        <h3>Results:</h3>
+        <pre style="min-height:20em;"><code id="result"></code></pre>
+      </div>
+
+    </div>
+
+    <div class="row">
+      <div class="col-sm-12">
+        <h1>Instructions</h1>
+        <p>
+          Please reference the mission documentation or <a href="https://github.com/bucharest-gold/nodejs-istio-routing/README.md">README</a> for next steps and instructions.
+        </p>
+        <h4>View the defaults</h4>
+        <p>
+          Click "Invoke" in the UI; do this several times. You will notice that the services are currently load-balanced at exactly 50%. The responses from service A and B should be balanced by default at 50% by the Kubernetes cluster. This is not always desirable for different routing requirements. Sometimes it is important to slowly direct traffic to a new service over time. In this case, we can supply an Istio RouteRule to control load balancing behavior.
+        </p>
+        <h4>Apply a custom Istio RouteRule to control load balancing behavior.</h4>
+        <p>Log in to your project's namespace, navigate to the mission source code on your local environment, and run the following command from your CLI:</p>
+        <pre>oc create -f rules/load-balancing-rule.yaml</pre>
+        <p>
+          Note that the RouteRule defined in the file above uses labels "a" and "b" to identify each unique version of the service. If multiple services match any of these labels, traffic will be divided between them accordingly. Additional routes/weights can be supplied using additional labels/service versions as desired.
+        </p>
+        <h4>View the load-balanced behavior</h4>
+        <p>
+          Click "Invoke" in the UI; do this several times. You will notice that traffic is no longer routed at 50/50%, and more traffic is directed to service version B than service version A. Adjust the weights in the rule-file and re-run the command above (use new weights of your choice). You should see traffic adjust accordingly. Rules may take a few seconds to be updated in the Istio-system.
+        </p>
+        <h4>Conclusion</h4>
+        <p>
+          Congratulations! You now know how to direct traffic between different versions of a service using Istio RouteRules. This feature may be applied for any number of routing needs.
+        </p>
+      </div>
+    </div>
+
+  </div>
+
+  <script
+      src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+  <script
+      src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
+      integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+      crossorigin="anonymous"></script>
+
+  <script>
+    $(document).ready(function() {
+
+      $("#invoke").click(function(e) {
+          $.get("/api/request-data", function(res) {
+            $("#result").prepend(JSON.stringify(res) + "\n");
+          })
+          .fail(function(jqxhr, textStatus, error) {
+            $("#result").prepend("HTTP Response Code `" + jqxhr.status + "` with cause: " + jqxhr.responseText + "\n");
+          });
+          e.preventDefault();
+      });
+
+      $("#clear").click(function(e) {
+        $("#result").html("");
+        e.preventDefault();
+      });
+    });
+
+  </script>
+</div>
+</body>
+
+</html>
