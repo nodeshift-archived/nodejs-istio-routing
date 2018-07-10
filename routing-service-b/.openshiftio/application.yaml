@@ -110,17 +110,17 @@ objects:
       spec:
         containers:
           - readinessProbe:
-              httpGet:
-                path: /api/data
-                port: 8080
-                scheme: HTTP
+              exec:
+                command:
+                - curl
+                - http://localhost:8080/api/data
+              initialDelaySeconds: 10
             livenessProbe:
-              httpGet:
-                path: /api/data
-                port: 8080
-                scheme: HTTP
-              initialDelaySeconds: 60
-              periodSeconds: 30
+              exec:
+                command:
+                - curl
+                - http://localhost:8080/api/data
+              initialDelaySeconds: 180
             image: nodejs-istio-routing-service-b
             name: nodejs-istio-routing-service-b
             securityContext:
