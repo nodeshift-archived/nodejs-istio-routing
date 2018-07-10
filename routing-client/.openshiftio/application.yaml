@@ -108,17 +108,17 @@ objects:
       spec:
         containers:
           - readinessProbe:
-              httpGet:
-                path: /api/health/readiness
-                port: 8080
-                scheme: HTTP
+              exec:
+                command:
+                - curl
+                - http://localhost:8080/api/health/readiness
+              initialDelaySeconds: 10
             livenessProbe:
-              httpGet:
-                path: /api/health/liveness
-                port: 8080
-                scheme: HTTP
-              initialDelaySeconds: 60
-              periodSeconds: 30
+              exec:
+                command:
+                - curl
+                - http://localhost:8080/api/health/liveness
+              initialDelaySeconds: 180
             image: nodejs-istio-routing-client
             name: nodejs-istio-routing-client
             securityContext:
