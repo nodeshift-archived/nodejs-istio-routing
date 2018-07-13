@@ -1,0 +1,17 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: nodejs-istio-routing-service
+spec:
+  hosts:
+  - nodejs-istio-routing-service
+  http:
+  - route:
+    - destination:
+        host: nodejs-istio-routing-service
+        subset: a
+      weight: 30
+    - destination:
+        host: nodejs-istio-routing-service
+        subset: b
+      weight: 70
