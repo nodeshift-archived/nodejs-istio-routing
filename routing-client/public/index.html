@@ -57,17 +57,17 @@
       <div class="col-sm-12">
         <h1>Instructions</h1>
         <p>
-          Please reference the mission documentation or <a href="https://github.com/bucharest-gold/nodejs-istio-routing/README.md">README</a> for next steps and instructions.
+          Please reference the mission documentation or <a href="https://github.com/bucharest-gold/nodejs-istio-routing/blob/master/README.md">README</a> for next steps and instructions.
         </p>
         <h4>View the defaults</h4>
         <p>
-          Click "Invoke" in the UI; do this several times. You will notice that the services are currently load-balanced at exactly 50%. The responses from service A and B should be balanced by default at 50% by the Kubernetes cluster. This is not always desirable for different routing requirements. Sometimes it is important to slowly direct traffic to a new service over time. In this case, we can supply an Istio RouteRule to control load balancing behavior.
+          Click "Invoke" in the UI; do this several times. You will notice that the services are currently load-balanced at exactly 50%. The responses from service A and B should be balanced by default at 50% by the Kubernetes cluster. This is not always desirable for different routing requirements. Sometimes it is important to slowly direct traffic to a new service over time. In this case, we can supply an Istio VirtualService to control load balancing behavior.
         </p>
-        <h4>Apply a custom Istio RouteRule to control load balancing behavior.</h4>
+        <h4>Apply a custom Istio VirtualService to control load balancing behavior.</h4>
         <p>Log in to your project's namespace, navigate to the mission source code on your local environment, and run the following command from your CLI:</p>
-        <pre>oc create -f rules/load-balancing-rule.yaml</pre>
+        <pre>oc create -f istio-config/load-balancing-rule.yaml</pre>
         <p>
-          Note that the RouteRule defined in the file above uses labels "a" and "b" to identify each unique version of the service. If multiple services match any of these labels, traffic will be divided between them accordingly. Additional routes/weights can be supplied using additional labels/service versions as desired.
+          Note that the VirtualService defined in the file above uses subsets "a" and "b" to identify each unique version of the service. If multiple services match any of these subsets defined in the DestinationRule, traffic will be divided between them accordingly. Additional routes/weights can be supplied using additional subset/service versions as desired.
         </p>
         <h4>View the load-balanced behavior</h4>
         <p>
@@ -75,7 +75,7 @@
         </p>
         <h4>Conclusion</h4>
         <p>
-          Congratulations! You now know how to direct traffic between different versions of a service using Istio RouteRules. This feature may be applied for any number of routing needs.
+          Congratulations! You now know how to direct traffic between different versions of a service using an Istio VirtualService. This feature may be applied for any number of routing needs.
         </p>
       </div>
     </div>
@@ -93,7 +93,7 @@
     $(document).ready(function() {
 
       $("#invoke").click(function(e) {
-          $.get("/api/request-data", function(res) {
+          $.get(createURL("api/request-data"), function(res) {
             $("#result").prepend(JSON.stringify(res) + "\n");
           })
           .fail(function(jqxhr, textStatus, error) {
@@ -106,6 +106,13 @@
         $("#result").html("");
         e.preventDefault();
       });
+
+      function createURL(name) {
+        if (window.location.href.endsWith("/")) {
+          return name;
+        }
+        return "nodejs-istio-routing/" + name;
+      }
     });
 
   </script>

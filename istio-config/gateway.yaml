@@ -1,0 +1,54 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: nodejs-istio-routing-gateway
+spec:
+  selector:
+    istio: ingressgateway # use istio default controller
+  servers:
+  - port:
+      number: 80
+      name: http
+      protocol: HTTP
+    hosts:
+    - "*"
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: nodejs-istio-routing-client
+spec:
+  hosts:
+  - "*"
+  gateways:
+  - nodejs-istio-routing-gateway
+  http:
+  - match:
+    - uri:
+        prefix: /nodejs-istio-routing/
+    - uri:
+        prefix: /nodejs-istio-routing
+    rewrite:
+      uri: /
+    route:
+    - destination:
+        host: nodejs-istio-routing-client
+        port:
+          number: 8080
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: nodejs-istio-routing-service
+spec:
+  host: nodejs-istio-routing-service
+  trafficPolicy:
+    tls:
+      mode: ISTIO_MUTUAL
+  subsets:
+  - name: a
+    labels:
+      version: a
+  - name: b
+    labels:
+      version: b
