@@ -93,7 +93,7 @@ objects:
       provider: nodeshift
       expose: 'true'
       project: nodejs-istio-routing-client
-      version: 1.1.0
+      version: 1.2.0
 - apiVersion: v1
   kind: DeploymentConfig
   metadata:
