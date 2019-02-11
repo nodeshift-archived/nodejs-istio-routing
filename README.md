@@ -1,5 +1,7 @@
 # Istio Routing Mission for Node.js
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/nodeshift-starters/nodejs-istio-routing.svg)](https://greenkeeper.io/)
+
 ## Purpose
 
 Showcase Routing in Istio with a Node.js application
