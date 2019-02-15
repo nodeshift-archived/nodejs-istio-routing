@@ -1,0 +1,11 @@
+{
+  "groups": {
+    "default": {
+      "packages": [
+        "routing-client/package.json",
+        "routing-service-a/package.json",
+        "routing-service-b/package.json"
+      ]
+    }
+  }
+}
