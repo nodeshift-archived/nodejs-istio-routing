@@ -42,7 +42,7 @@
   "homepage": "https://github.com/nodeshift-starters/nodejs-istio-routing",
   "devDependencies": {
     "nodeshift": "~2.1.1",
-    "nyc": "~13.2.0",
+    "nyc": "~14.0.0",
     "rhoaster": "^0.2.0",
     "supertest": "^4.0.0",
     "szero": "^1.0.1",
