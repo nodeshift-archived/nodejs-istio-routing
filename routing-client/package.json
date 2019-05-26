@@ -54,7 +54,7 @@
   "keywords": [],
   "dependencies": {
     "body-parser": "^1.18.2",
-    "express": "4.16.4",
+    "express": "4.17.1",
     "kube-probe": "~0.3.1",
     "license-reporter": "^1.2.0",
     "roi": "~0.18.0"
