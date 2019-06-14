@@ -8,7 +8,6 @@
     "lint": "xo",
     "coverage": "nyc npm test",
     "coveralls": "nyc npm test && nyc report --reporter=text-lcov | coveralls",
-    "dependencyCheck": "szero . --ci",
     "start": "node .",
     "prepublish": "license-reporter report -s",
     "postinstall": "license-reporter report -s && license-reporter save -s --xml licenses.xml"
@@ -45,7 +44,6 @@
     "nyc": "~14.0.0",
     "rhoaster": "^0.2.0",
     "supertest": "^4.0.0",
-    "szero": "^1.0.1",
     "tap-spec": "~5.0.0",
     "tape": "~4.10.0",
     "xo": "~0.24.0"
