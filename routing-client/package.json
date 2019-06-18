@@ -51,10 +51,10 @@
   "description": "",
   "keywords": [],
   "dependencies": {
+    "axios": "^0.19.0",
     "body-parser": "^1.18.2",
     "express": "4.16.4",
     "kube-probe": "~0.3.1",
-    "license-reporter": "^1.2.0",
-    "roi": "~0.18.0"
+    "license-reporter": "^1.2.0"
   }
 }
