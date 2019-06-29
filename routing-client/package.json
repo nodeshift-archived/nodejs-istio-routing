@@ -45,7 +45,7 @@
     "rhoaster": "^0.2.0",
     "supertest": "^4.0.0",
     "tap-spec": "~5.0.0",
-    "tape": "~4.10.0",
+    "tape": "~4.11.0",
     "xo": "~0.24.0"
   },
   "description": "",
